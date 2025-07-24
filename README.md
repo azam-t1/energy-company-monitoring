@@ -261,3 +261,5 @@ MIT
 ---
 
 Made with ❤️ by the Energy Company Monitoring team. Happy coding!
+
+## Checking the Pipeline Status
