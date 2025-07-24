@@ -15,14 +15,15 @@ namespace EnergyCompanyMonitoring.Migrations
                 name: "Accounts",
                 columns: table => new
                 {
-                    AccountId = table.Column<int>(type: "int", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    AccountId = table.Column<int>(type: "int", nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Accounts", x => x.AccountId);
+                    table.PrimaryKey("PK_Accounts", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -32,6 +33,7 @@ namespace EnergyCompanyMonitoring.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     AccountId = table.Column<int>(type: "int", nullable: false),
+                    AccountEntityId = table.Column<int>(type: "int", nullable: false),
                     MeterReadingDateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     MeterReadValue = table.Column<int>(type: "int", nullable: false)
                 },
@@ -39,12 +41,17 @@ namespace EnergyCompanyMonitoring.Migrations
                 {
                     table.PrimaryKey("PK_MeterReadings", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_MeterReadings_Accounts_AccountId",
-                        column: x => x.AccountId,
+                        name: "FK_MeterReadings_Accounts_AccountEntityId",
+                        column: x => x.AccountEntityId,
                         principalTable: "Accounts",
-                        principalColumn: "AccountId",
+                        principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MeterReadings_AccountEntityId",
+                table: "MeterReadings",
+                column: "AccountEntityId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MeterReadings_AccountId_MeterReadingDateTime",

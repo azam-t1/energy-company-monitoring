@@ -99,8 +99,7 @@ public class MeterReadingService : IMeterReadingService
                     
                     var meterReading = new MeterReading
                     {
-                        AccountId = record.AccountId,
-                        AccountEntityId = account.Id,
+                        AccountId = account.Id,
                         MeterReadingDateTime = readingDate,
                         MeterReadValue = readingValue
                     };

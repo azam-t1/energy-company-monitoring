@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace EnergyCompanyMonitoring.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250724181238_InitialCreate")]
+    [Migration("20250724183739_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -27,11 +27,14 @@ namespace EnergyCompanyMonitoring.Migrations
 
             modelBuilder.Entity("EnergyCompanyMonitoring.Models.Account", b =>
                 {
-                    b.Property<int>("AccountId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AccountId"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AccountId")
+                        .HasColumnType("int");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -41,7 +44,7 @@ namespace EnergyCompanyMonitoring.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.HasKey("AccountId");
+                    b.HasKey("Id");
 
                     b.ToTable("Accounts");
                 });
@@ -54,6 +57,9 @@ namespace EnergyCompanyMonitoring.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("AccountEntityId")
+                        .HasColumnType("int");
+
                     b.Property<int>("AccountId")
                         .HasColumnType("int");
 
@@ -65,6 +71,8 @@ namespace EnergyCompanyMonitoring.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AccountEntityId");
+
                     b.HasIndex("AccountId", "MeterReadingDateTime")
                         .IsUnique();
 
@@ -75,7 +83,7 @@ namespace EnergyCompanyMonitoring.Migrations
                 {
                     b.HasOne("EnergyCompanyMonitoring.Models.Account", "Account")
                         .WithMany("MeterReadings")
-                        .HasForeignKey("AccountId")
+                        .HasForeignKey("AccountEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
