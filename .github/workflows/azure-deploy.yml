@@ -1,0 +1,102 @@
+﻿name: Azure Deployment
+
+on:
+  push:
+    branches:
+      - main
+      - master
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy-api:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: '9.0.x'
+          
+      - name: Restore dependencies
+        run: dotnet restore EnergyCompanyMonitoring.sln
+        
+      - name: Build
+        run: dotnet build EnergyCompanyMonitoring.sln --configuration Release --no-restore
+        
+      - name: Test
+        run: dotnet test EnergyCompanyMonitoring.sln --configuration Release --no-build
+        
+      - name: Publish
+        run: dotnet publish EnergyCompanyMonitoring/EnergyCompanyMonitoring.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        
+      # Set up environment variables for App Service
+      - name: Create appsettings.Production.json
+        run: |
+          cat > ${{env.DOTNET_ROOT}}/myapp/appsettings.Production.json << EOF
+          {
+            "ConnectionStrings": {
+              "DefaultConnection": "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
+            },
+            "Logging": {
+              "LogLevel": {
+                "Default": "Information",
+                "Microsoft.AspNetCore": "Warning"
+              }
+            },
+            "AllowedHosts": "*",
+            "Cors": {
+              "AllowedOrigins": ["${{ secrets.CLIENT_URL }}"]
+            }
+          }
+          EOF
+      
+      - name: Deploy to Azure Web App
+        id: deploy-to-webapp
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: 'energy-monitoring-api'
+          slot-name: 'production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE }}
+          package: ${{env.DOTNET_ROOT}}/myapp
+
+  build-and-deploy-client:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: |
+          cd client
+          npm ci
+      
+      # Create environment file for React client
+      - name: Create .env file
+        run: |
+          cd client
+          echo "REACT_APP_API_URL=${{ secrets.API_URL }}" > .env
+          echo "REACT_APP_VERSION=${GITHUB_SHA::7}" >> .env
+          
+      - name: Build
+        run: |
+          cd client
+          # Disable treating warnings as errors in CI
+          ESLINT_NO_DEV_ERRORS=true CI=false npm run build
+          
+      - name: Deploy to Azure Static Web Apps
+        id: deploy-to-static-webapp
+        uses: Azure/static-web-apps-deploy@v1
+        with:
+          azure_static_web_apps_api_token: ${{ secrets.AZURE_STATIC_WEB_APPS_API_TOKEN }}
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          action: "upload"
+          app_location: "/client"
+          api_location: ""
+          output_location: "build"

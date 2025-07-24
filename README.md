@@ -164,6 +164,96 @@ Run the tests using:
 dotnet test
 ```
 
+## 🚀 Azure Deployment
+
+This project is configured for deployment to Microsoft Azure. Follow these steps to deploy your application:
+
+### Prerequisites
+- An active Azure subscription
+- Azure CLI installed (optional, for manual deployments)
+- GitHub repository with the code
+
+### Backend API Deployment (Azure App Service)
+
+1. **Create an Azure App Service:**
+   ```
+   az group create --name energy-monitoring-rg --location eastus
+   az appservice plan create --name energy-monitoring-plan --resource-group energy-monitoring-rg --sku B1
+   az webapp create --name energy-monitoring-api --resource-group energy-monitoring-rg --plan energy-monitoring-plan --runtime "DOTNET|9.0"
+   ```
+
+2. **Configure Connection String:**
+   - In the Azure portal, go to your App Service > Settings > Configuration
+   - Add a new connection string named `DefaultConnection` with your Azure SQL Database connection string
+   - Set the type to `SQLAzure`
+
+3. **Set up GitHub Actions Deployment:**
+   - In the Azure portal, go to your App Service > Deployment Center
+   - Select GitHub as the source
+   - Follow the prompts to connect to your GitHub account and select your repository
+   - Download the publish profile and add it as a GitHub secret named `AZUREAPPSERVICE_PUBLISHPROFILE`
+
+### Frontend Deployment (Azure Static Web Apps)
+
+1. **Create an Azure Static Web App:**
+   ```
+   az staticwebapp create --name energy-monitoring-client --resource-group energy-monitoring-rg --location eastus2 --source https://github.com/YOUR_USERNAME/YOUR_REPO --branch main --app-location "/client" --output-location "build"
+   ```
+
+2. **Configure API URL:**
+   - After deployment, get your API URL from the App Service overview
+   - Update the client's environment configuration to point to this URL
+
+3. **Set up GitHub Actions Deployment:**
+   - During creation, Static Web Apps automatically sets up GitHub Actions
+   - Copy the deployment token and add it as a GitHub secret named `AZURE_STATIC_WEB_APPS_API_TOKEN`
+
+### Database Deployment (Azure SQL Database)
+
+1. **Create an Azure SQL Database:**
+   ```
+   az sql server create --name energy-monitoring-sql --resource-group energy-monitoring-rg --location eastus --admin-user dbadmin --admin-password <password>
+   az sql db create --resource-group energy-monitoring-rg --server energy-monitoring-sql --name EnergyMonitoringDB --service-objective S0
+   ```
+
+2. **Configure Firewall Rules:**
+   ```
+   az sql server firewall-rule create --resource-group energy-monitoring-rg --server energy-monitoring-sql --name AllowAzureServices --start-ip-address 0.0.0.0 --end-ip-address 0.0.0.0
+   ```
+
+3. **Run Migrations:**
+   - Use Entity Framework Core tools to apply migrations to your Azure SQL database:
+   ```
+   dotnet ef database update --connection "Your_Azure_Connection_String" --project EnergyCompanyMonitoring
+   ```
+
+### Automated Deployment with GitHub Actions
+
+This project includes a GitHub Actions workflow file (`.github/workflows/azure-deploy.yml`) that automates the deployment process:
+
+1. **Set up required secrets in your GitHub repository:**
+   - `AZUREAPPSERVICE_PUBLISHPROFILE`: The publish profile from your Azure App Service
+   - `AZURE_STATIC_WEB_APPS_API_TOKEN`: The deployment token from your Static Web App
+
+2. **Push to the main branch:**
+   - Any push to the main branch will trigger the workflow
+   - The workflow builds and deploys both the API and client application
+
+3. **Monitor deployments:**
+   - Go to the "Actions" tab in your GitHub repository
+   - Check the logs for any deployment issues
+
+### Post-Deployment Configuration
+
+1. **CORS Configuration:**
+   - In your Azure App Service, ensure CORS is properly configured to allow requests from your Static Web App
+
+2. **Environment Variables:**
+   - Set any required environment variables in the Azure App Service Configuration section
+
+3. **Database Migration:**
+   - Ensure your database is properly seeded with initial test accounts
+
 ## 📄 License
 
 MIT
