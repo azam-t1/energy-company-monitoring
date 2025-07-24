@@ -84,7 +84,7 @@ const MeterReadingUpload = () => {
 
             <p><strong>Successful readings:</strong> {result.successfulReadings}</p>
             <p><strong>Failed readings:</strong> {result.failedReadings}</p>
-            
+
           </div>
           
           {result.errors && result.errors.length > 0 && (
