@@ -41,7 +41,7 @@ public class MeterReadingService : IMeterReadingService
             
             var records = csv.GetRecords<MeterReadingDto>().ToList();
             
-            // processing each record
+            // process each record
             foreach (var record in records)
             {
                 try
@@ -65,11 +65,11 @@ public class MeterReadingService : IMeterReadingService
                     DateTime readingDate;
                     if (!DateTime.TryParseExact(record.MeterReadingDateTime, 
                                                new[] { 
-                                                   "dd/MM/yyyy HH:mm", 
-                                                   "d/M/yyyy H:mm",   // Format for "6/5/2019 9:24"
-                                                   "M/d/yyyy H:mm",   // US format with single digits
-                                                   "MM/dd/yyyy HH:mm", 
-                                                   "yyyy-MM-dd HH:mm:ss" 
+                                                   "dd/MM/yyyy HH:mm",      // format for "24/5/2019 22:24" 
+                                                   "d/M/yyyy H:mm",         // format for "6/5/2019 9:24"
+                                                   "M/d/yyyy H:mm",         // format for "12/5/2019 9:24"
+                                                   "MM/dd/yyyy HH:mm",      // format for "12/15/2019 15:24"
+                                                   "yyyy-MM-dd HH:mm:ss"    // format for "2019-12-26 19:30:45"
                                                }, 
                                                CultureInfo.InvariantCulture,
                                                DateTimeStyles.None, 
@@ -142,14 +142,14 @@ public class MeterReadingService : IMeterReadingService
     {
         error = string.Empty;
         
-        // checking if account ID is valid
+        // check if account id is valid
         if (reading.AccountId <= 0)
         {
             error = "Invalid account ID";
             return false;
         }
         
-        // checking if meter reading value is in the NNNNN format (5 digits)
+        // check if meter reading value is in the NNNNN format (up to 5 digits)
         if (string.IsNullOrWhiteSpace(reading.MeterReadValue))
         {
             error = "Meter reading value is required";

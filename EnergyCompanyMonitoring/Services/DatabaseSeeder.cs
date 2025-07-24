@@ -17,10 +17,10 @@ public static class DatabaseSeeder
         
         try
         {
-            // ensure database is created and apply migrations
+            // ensure the database is created and migrations are applied
             await context.Database.MigrateAsync();
             
-            // check if accounts already seeded
+            // check if any accounts are already seeded
             if (!await context.Accounts.AnyAsync())
             {
                 logger.LogInformation("Seeding accounts from CSV file...");
