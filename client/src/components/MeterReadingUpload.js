@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 
-// API base URL
-const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5233';
+import apiUrl from '../utils/api';
 
 const MeterReadingUpload = () => {
   const [file, setFile] = useState(null);
@@ -37,7 +36,7 @@ const MeterReadingUpload = () => {
     formData.append('file', file);
     
     try {
-      const response = await fetch(`${API_BASE_URL}/meter-reading-uploads`, {
+      const response = await fetch(`${apiUrl}/meter-reading-uploads`, {
         method: 'POST',
         body: formData,
       });
