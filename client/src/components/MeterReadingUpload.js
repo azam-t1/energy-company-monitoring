@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 // API base URL
-const API_BASE_URL = 'http://localhost:5233';
+const apiUrl = process.env.REACT_APP_API_URL || 'http://localhost:5233';
 
 const MeterReadingUpload = () => {
   const [file, setFile] = useState(null);
