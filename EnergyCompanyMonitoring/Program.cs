@@ -1,10 +1,20 @@
+using Microsoft.EntityFrameworkCore;
+using EnergyCompanyMonitoring.Data;
+using EnergyCompanyMonitoring.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+// Configure Database
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Register application services
+builder.Services.AddScoped<IMeterReadingService, MeterReadingService>();
 
 var app = builder.Build();
 
@@ -19,5 +29,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Seed database data
+await DatabaseSeeder.SeedDataAsync(app.Services, app.Environment);
 
 app.Run();

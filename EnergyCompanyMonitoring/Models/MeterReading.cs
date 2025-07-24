@@ -10,7 +10,9 @@ public class MeterReading
     
     public int AccountId { get; set; }
     
-    [ForeignKey(nameof(AccountId))]
+    [ForeignKey("Account")]
+    public int AccountEntityId { get; set; }
+    
     public Account? Account { get; set; }
     
     public DateTime MeterReadingDateTime { get; set; }

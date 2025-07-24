@@ -16,7 +16,6 @@ public class ApplicationDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         
-        // Configure unique constraint for meter readings to prevent duplicates
         modelBuilder.Entity<MeterReading>()
             .HasIndex(m => new { m.AccountId, m.MeterReadingDateTime })
             .IsUnique();
