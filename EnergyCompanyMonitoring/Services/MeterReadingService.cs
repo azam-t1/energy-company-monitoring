@@ -61,10 +61,22 @@ public class MeterReadingService : IMeterReadingService
                         continue;
                     }
                     
-                    if (!DateTime.TryParse(record.MeterReadingDateTime, out DateTime readingDate))
+                    // Use specific date format for parsing with various formats
+                    DateTime readingDate;
+                    if (!DateTime.TryParseExact(record.MeterReadingDateTime, 
+                                               new[] { 
+                                                   "dd/MM/yyyy HH:mm", 
+                                                   "d/M/yyyy H:mm",   // Format for "6/5/2019 9:24"
+                                                   "M/d/yyyy H:mm",   // US format with single digits
+                                                   "MM/dd/yyyy HH:mm", 
+                                                   "yyyy-MM-dd HH:mm:ss" 
+                                               }, 
+                                               CultureInfo.InvariantCulture,
+                                               DateTimeStyles.None, 
+                                               out readingDate))
                     {
                         result.FailedReadings++;
-                        result.Errors.Add($"Invalid date format for account {record.AccountId}");
+                        result.Errors.Add($"Invalid date format for account {record.AccountId}. Expected format: dd/MM/yyyy HH:mm or d/M/yyyy H:mm");
                         continue;
                     }
                     

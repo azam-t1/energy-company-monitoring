@@ -19,9 +19,9 @@ builder.Services.AddScoped<IMeterReadingService, MeterReadingService>();
 // Configure CORS to allow requests from the UI client
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowVueClient", policy =>
+    options.AddPolicy("AllowReactClient", policy =>
     {
-        policy.WithOrigins("http://localhost:8080")
+        policy.WithOrigins("http://localhost:3000")
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -41,7 +41,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-app.UseCors("AllowVueClient");
+app.UseCors("AllowReactClient");
 
 // Seed database data
 await DatabaseSeeder.SeedDataAsync(app.Services, app.Environment);
