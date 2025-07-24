@@ -16,6 +16,17 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 // Register application services
 builder.Services.AddScoped<IMeterReadingService, MeterReadingService>();
 
+// Configure CORS to allow requests from the UI client
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowVueClient", policy =>
+    {
+        policy.WithOrigins("http://localhost:8080")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -29,6 +40,8 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors("AllowVueClient");
 
 // Seed database data
 await DatabaseSeeder.SeedDataAsync(app.Services, app.Environment);
