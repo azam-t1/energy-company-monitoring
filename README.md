@@ -35,3 +35,20 @@ We have provided you with a list of test customers along with their respective A
 3) Tests
 
 4) CI/CD pipeline in GitHub
+
+## Implementation Details
+
+### CI/CD Pipeline
+
+A GitHub Actions workflow has been set up for continuous integration and deployment of the application. The pipeline:
+
+- Builds and tests both the .NET backend and React frontend
+- Runs automatically on pushes to main/master branches and pull requests
+- Validates code quality before deployment
+
+The workflow file is located at `.github/workflows/dotnet.yml`.
+
+To view pipeline runs:
+1. Go to the repository on GitHub
+2. Click on the "Actions" tab
+3. View the status of current and past workflow runs
