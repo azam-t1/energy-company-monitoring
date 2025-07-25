@@ -248,6 +248,52 @@ This project includes a GitHub Actions workflow file (`.github/workflows/azure-d
 3. **Database Migration:**
    - Ensure your database is properly seeded with initial test accounts
 
+## 🛠️ Azure App Service Container Logging
+
+To enable logging for your Azure App Service container:
+
+1. Go to your App Service in the Azure Portal.
+2. In the left menu, select **"Logs"** under the **Monitoring** section.
+3. Set **Application Logging (Filesystem)** to **On**.
+4. Optionally, set **Docker Container Logging** to **On** for container logs.
+5. Save your changes.
+
+You can view logs in the **Log stream** blade or download them from the **App Service > Advanced Tools (Kudu) > LogFiles** directory.
+
+For more details, see: [Azure Linux diagnostics](https://aka.ms/linux-diagnostics)
+
+## 🆘 Troubleshooting: Azure SQL Database Connectivity
+
+If you can't connect to your Azure SQL Database, check the following:
+
+1. **Firewall Rules**
+   - In the Azure Portal, go to your SQL server resource.
+   - Under "Networking" > "Firewalls and virtual networks", add your client IP address or set "Allow Azure services and resources to access this server" to "Yes".
+
+2. **Connection String**
+   - Ensure your connection string uses the correct server name (e.g., `your-server-name.database.windows.net`), database name, username (in the format `username@your-server-name`), and password.
+   - Example:
+     ```
+     Server=tcp:your-server-name.database.windows.net,1433;Initial Catalog=YourDatabase;Persist Security Info=False;User ID=youruser@your-server-name;Password=yourpassword;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
+     ```
+
+3. **SQL Authentication**
+   - Azure SQL requires SQL Authentication (not Windows Authentication). Make sure you use the SQL admin username and password.
+
+4. **Database Exists**
+   - Confirm the database has been created and is online.
+
+5. **App Service Configuration**
+   - In Azure App Service > Configuration, ensure the connection string is set under "Connection strings" and the type is `SQLAzure`.
+
+6. **Reset Password**
+   - If you forgot your password, reset it in the Azure Portal under your SQL server's "Administrators" section.
+
+7. **Check for Typos**
+   - Double-check all values for typos or incorrect formatting.
+
+For more help, see [Azure SQL Connectivity Troubleshooting](https://learn.microsoft.com/en-us/azure/azure-sql/database/connectivity-troubleshoot).
+
 ## 📄 License
 
 MIT
