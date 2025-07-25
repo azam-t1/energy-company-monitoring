@@ -30,28 +30,7 @@ jobs:
         
       - name: Publish
         run: dotnet publish EnergyCompanyMonitoring/EnergyCompanyMonitoring.csproj -c Release -o ${{env.DOTNET_ROOT}}/myapp
-        
-      # Set up environment variables for App Service
-      - name: Create appsettings.Production.json
-        run: |
-          cat > ${{env.DOTNET_ROOT}}/myapp/appsettings.Production.json << EOF
-          {
-            "ConnectionStrings": {
-              "DefaultConnection": "${{ secrets.AZURE_SQL_CONNECTION_STRING }}"
-            },
-            "Logging": {
-              "LogLevel": {
-                "Default": "Information",
-                "Microsoft.AspNetCore": "Warning"
-              }
-            },
-            "AllowedHosts": "*",
-            "Cors": {
-              "AllowedOrigins": ["${{ secrets.CLIENT_URL }}"]
-            }
-          }
-          EOF
-      
+             
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
