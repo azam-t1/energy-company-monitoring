@@ -100,7 +100,7 @@ To view pipeline runs:
 ### Prerequisites
 - 🟣 .NET 6.0+ SDK
 - 🟢 Node.js 16+ and npm
-- 🟠 SQL Server (or Docker for containerized database)
+- 🟠 SQL Server
 
 ### Setup and Installation
 
@@ -126,12 +126,6 @@ To view pipeline runs:
    npm start
    ```
    The client application will be available at http://localhost:3000
-
-### 🐳 Using Docker
-You can also run the application using Docker:
-```
-docker-compose up -d
-```
 
 ## 📡 API Usage
 
